@@ -25,7 +25,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aditya Tomar — Full Stack Developer" },
+      { title: "Aditya Tomar — Upcoming Developer" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),

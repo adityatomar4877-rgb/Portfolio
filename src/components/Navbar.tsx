@@ -52,8 +52,8 @@ export function Navbar({ name }: { name: string }) {
                   <a
                     href={l.href}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-smooth ${isActive
-                        ? "bg-primary/15 text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {l.label}
@@ -66,7 +66,8 @@ export function Navbar({ name }: { name: string }) {
           <div className="flex items-center gap-2">
             {/* Resume */}
             <a
-              href="#"
+              href="/resume.pdf"
+              download="Aditya_Tomar_Resume.pdf"
               className="glass-btn flex items-center gap-2 rounded-full border-primary/40 pl-2 pr-4 py-2 text-sm font-medium"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
@@ -102,8 +103,8 @@ export function Navbar({ name }: { name: string }) {
                     href={l.href}
                     onClick={() => setMobileOpen(false)}
                     className={`block px-4 py-3 rounded-xl text-sm font-medium transition-smooth ${active === l.href.replace("#", "")
-                        ? "bg-primary/15 text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
                     {l.label}

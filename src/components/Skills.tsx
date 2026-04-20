@@ -1,79 +1,266 @@
 import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { RevealText } from "@/components/RevealText";
 import { TechMarquee } from "@/components/TechMarquee";
 
-const skills = [
-  { label: "React", level: 90, tone: "orange", icon: "⚛" },
-  { label: "TypeScript", level: 85, tone: "blue", icon: "TS" },
-  { label: "Next.js", level: 82, tone: "green", icon: "▲" },
-  { label: "JavaScript", level: 92, tone: "yellow", icon: "JS" },
-  { label: "Node.js", level: 80, tone: "green", icon: "⬡" },
-  { label: "Python", level: 85, tone: "blue", icon: "🐍" },
-  { label: "Tailwind", level: 90, tone: "cyan", icon: "✦" },
-  { label: "Firebase", level: 78, tone: "orange", icon: "🔥" },
-  { label: "Supabase", level: 75, tone: "green", icon: "⚡" },
-  { label: "FastAPI", level: 72, tone: "pink", icon: "⚙" },
-  { label: "Git", level: 88, tone: "orange", icon: "⎇" },
-  { label: "Linux", level: 75, tone: "blue", icon: "🐧" },
+const CATEGORIES = [
+  {
+    name: "Frontend",
+    icon: "◈",
+    color: "orange",
+    skills: [
+      { label: "React", level: 90, icon: "⚛" },
+      { label: "Next.js", level: 82, icon: "▲" },
+      { label: "TypeScript", level: 85, icon: "TS" },
+      { label: "JavaScript", level: 92, icon: "JS" },
+      { label: "Tailwind CSS", level: 90, icon: "✦" },
+    ],
+  },
+  {
+    name: "Backend",
+    icon: "◉",
+    color: "blue",
+    skills: [
+      { label: "Node.js", level: 80, icon: "⬡" },
+      { label: "Express.js", level: 78, icon: "∞" },
+      { label: "FastAPI", level: 72, icon: "⚙" },
+      { label: "Python", level: 85, icon: "🐍" },
+    ],
+  },
+  {
+    name: "Database & Cloud",
+    icon: "◎",
+    color: "green",
+    skills: [
+      { label: "Firebase", level: 78, icon: "🔥" },
+      { label: "Supabase", level: 75, icon: "⚡" },
+    ],
+  },
+  {
+    name: "Tools",
+    icon: "◇",
+    color: "pink",
+    skills: [
+      { label: "Git", level: 88, icon: "⎇" },
+      { label: "Linux", level: 75, icon: "🐧" },
+      { label: "Vercel", level: 82, icon: "▴" },
+    ],
+  },
 ];
 
-const toneVars: Record<string, { bar: string; glow: string; text: string }> = {
-  orange: { bar: "from-primary to-primary-glow", glow: "oklch(0.7 0.21 45 / 0.4)", text: "text-primary" },
-  blue: { bar: "from-[oklch(0.52_0.20_250)] to-[oklch(0.72_0.18_230)]", glow: "oklch(0.6 0.2 250 / 0.4)", text: "text-[oklch(0.72_0.18_230)]" },
-  green: { bar: "from-[oklch(0.62_0.19_148)] to-[oklch(0.75_0.16_138)]", glow: "oklch(0.65 0.19 148 / 0.4)", text: "text-[oklch(0.75_0.16_138)]" },
-  yellow: { bar: "from-[oklch(0.82_0.19_88)] to-[oklch(0.75_0.18_68)]", glow: "oklch(0.82 0.19 88 / 0.4)", text: "text-[oklch(0.82_0.19_88)]" },
-  cyan: { bar: "from-[oklch(0.75_0.14_200)] to-[oklch(0.82_0.12_188)]", glow: "oklch(0.78 0.14 200 / 0.4)", text: "text-[oklch(0.82_0.12_188)]" },
-  pink: { bar: "from-[oklch(0.68_0.20_330)] to-[oklch(0.78_0.18_315)]", glow: "oklch(0.7 0.20 330 / 0.4)", text: "text-[oklch(0.78_0.18_315)]" },
+const TONE: Record<string, { grad: string; glow: string; text: string; bg: string; border: string }> = {
+  orange: {
+    grad: "linear-gradient(135deg, oklch(0.7 0.21 45), oklch(0.78 0.19 55))",
+    glow: "oklch(0.7 0.21 45 / 0.35)",
+    text: "oklch(0.78 0.21 50)",
+    bg: "oklch(0.7 0.21 45 / 0.08)",
+    border: "oklch(0.7 0.21 45 / 0.25)",
+  },
+  blue: {
+    grad: "linear-gradient(135deg, oklch(0.52 0.20 250), oklch(0.72 0.18 230))",
+    glow: "oklch(0.6 0.2 250 / 0.35)",
+    text: "oklch(0.72 0.18 230)",
+    bg: "oklch(0.6 0.2 250 / 0.08)",
+    border: "oklch(0.6 0.2 250 / 0.25)",
+  },
+  green: {
+    grad: "linear-gradient(135deg, oklch(0.62 0.19 148), oklch(0.75 0.16 138))",
+    glow: "oklch(0.65 0.19 148 / 0.35)",
+    text: "oklch(0.72 0.18 142)",
+    bg: "oklch(0.65 0.19 148 / 0.08)",
+    border: "oklch(0.65 0.19 148 / 0.25)",
+  },
+  pink: {
+    grad: "linear-gradient(135deg, oklch(0.68 0.20 330), oklch(0.78 0.18 315))",
+    glow: "oklch(0.7 0.20 330 / 0.35)",
+    text: "oklch(0.75 0.19 322)",
+    bg: "oklch(0.7 0.20 330 / 0.08)",
+    border: "oklch(0.7 0.20 330 / 0.25)",
+  },
 };
+
+function SkillBar({ level, color, delay }: { level: number; color: string; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [filled, setFilled] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setFilled(true); obs.disconnect(); }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const t = TONE[color];
+  return (
+    <div ref={ref} className="h-1 w-full rounded-full overflow-hidden" style={{ background: "oklch(1 0 0 / 0.06)" }}>
+      <div
+        className="h-full rounded-full transition-all"
+        style={{
+          width: filled ? `${level}%` : "0%",
+          background: t.grad,
+          boxShadow: filled ? `0 0 10px ${t.glow}` : "none",
+          transitionDuration: "1.1s",
+          transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+          transitionDelay: `${delay}ms`,
+        }}
+      />
+    </div>
+  );
+}
+
+function CategoryBlock({ cat, index }: { cat: typeof CATEGORIES[0]; index: number }) {
+  const t = TONE[cat.color];
+  const blockRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = blockRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={blockRef}
+      className="skills-cat-block"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0) scale(1)" : "translateY(48px) scale(0.96)",
+        filter: visible ? "blur(0px)" : "blur(4px)",
+        transition: `opacity 0.75s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms, transform 0.75s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms, filter 0.6s ease ${index * 120}ms`,
+        borderColor: t.border,
+        background: `oklch(0.20 0.025 40 / 0.7)`,
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6 pb-4" style={{ borderBottom: `1px solid ${t.border}` }}>
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold"
+          style={{ background: t.bg, color: t.text, boxShadow: `0 0 20px ${t.glow}` }}
+        >
+          {cat.icon}
+        </div>
+        <div>
+          <p className="text-base font-bold tracking-tight" style={{ color: t.text }}>{cat.name}</p>
+          <p className="text-xs" style={{ color: "oklch(0.72 0.02 50)" }}>{cat.skills.length} technologies</p>
+        </div>
+      </div>
+
+      {/* Skills list */}
+      <div className="space-y-4">
+        {cat.skills.map((s, si) => (
+          <div key={s.label}>
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-sm">{s.icon}</span>
+                <span className="text-sm font-medium text-foreground/90">{s.label}</span>
+              </div>
+              <span className="text-xs font-bold tabular-nums" style={{ color: t.text }}>{s.level}%</span>
+            </div>
+            <SkillBar level={s.level} color={cat.color} delay={visible ? si * 80 + 200 : 0} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Floating orbs in background
+function FloatingOrbs() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {[
+        { top: "10%", left: "5%", color: "oklch(0.7 0.21 45 / 0.06)", size: 320, dur: 8 },
+        { top: "60%", right: "3%", color: "oklch(0.6 0.2 250 / 0.06)", size: 260, dur: 11, left: undefined as undefined | string },
+        { top: "30%", left: "45%", color: "oklch(0.65 0.19 148 / 0.05)", size: 200, dur: 9 },
+      ].map((o, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            top: o.top, left: o.left, right: (o as { right?: string }).right,
+            width: o.size, height: o.size,
+            background: `radial-gradient(circle, ${o.color}, transparent 70%)`,
+            animation: `skills-orb-float ${o.dur}s ease-in-out infinite alternate`,
+            animationDelay: `${i * 1.5}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function Skills() {
   const sectionRef = useScrollReveal();
+
   return (
-    <section id="skills" ref={sectionRef as React.RefObject<HTMLElement>}
-      className="reveal relative py-28 overflow-hidden">
-      <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-[oklch(0.55_0.18_250)]/5 blur-3xl pointer-events-none" />
+    <section
+      id="skills"
+      ref={sectionRef as React.RefObject<HTMLElement>}
+      className="reveal relative py-28 overflow-hidden"
+    >
+      <FloatingOrbs />
 
       <div className="relative max-w-7xl mx-auto px-6 md:px-12 lg:px-20">
-        {/* section label */}
-        <div className="reveal-child" style={{ "--reveal-delay": "0s" } as React.CSSProperties}>
-          <p className="text-sm font-semibold tracking-widest text-primary uppercase mb-3">What I work with</p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-16">
-            My{" "}
-            <RevealText text="Skills" wordClass="text-gradient-primary" baseDelay={200} />
-          </h2>
+        {/* Header */}
+        <div className="reveal-child mb-16" style={{ "--reveal-delay": "0s" } as React.CSSProperties}>
+          <p className="text-sm font-semibold tracking-widest text-primary uppercase mb-3">Arsenal</p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              What I <span className="text-gradient-primary">Build With</span>
+            </h2>
+            <p className="text-muted-foreground text-sm max-w-xs md:text-right leading-relaxed">
+              Tools and technologies I use to craft scalable, modern applications.
+            </p>
+          </div>
+          {/* Decorative line */}
+          <div className="mt-8 h-px bg-gradient-to-r from-primary/40 via-primary/10 to-transparent" />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {skills.map((s, i) => {
-            const t = toneVars[s.tone] ?? toneVars.orange;
-            /* alternate: even cards come from left, odd from right */
-            const dir = i % 2 === 0 ? "reveal-from-left" : "reveal-from-right";
+        {/* Category grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {CATEGORIES.map((cat, i) => (
+            <CategoryBlock key={cat.name} cat={cat} index={i} />
+          ))}
+        </div>
+
+        {/* Big number stats row */}
+        <div
+          className="reveal-child mt-14 grid grid-cols-3 gap-4 md:gap-8"
+          style={{ "--reveal-delay": "0.5s" } as React.CSSProperties}
+        >
+          {[
+            { num: "14+", label: "Technologies", color: "orange" },
+            { num: "4", label: "Categories", color: "blue" },
+            { num: "2+", label: "Years Learning", color: "green" },
+          ].map((s) => {
+            const t = TONE[s.color];
             return (
               <div
                 key={s.label}
-                className={`skill-card glass-card rounded-2xl p-5 group reveal-child ${dir}`}
-                style={{ "--reveal-delay": `${0.05 * i}s` } as React.CSSProperties}
+                className="glass-card rounded-2xl p-5 text-center"
+                style={{ borderColor: t.border }}
               >
-                <div className={`mb-4 text-2xl font-bold ${t.text}`}>{s.icon}</div>
-                <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-sm font-semibold text-foreground/90">{s.label}</span>
-                  <span className={`text-xs font-bold ${t.text}`}>{s.level}%</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full bg-gradient-to-r ${t.bar} skill-bar`}
-                    style={{ "--skill-w": `${s.level}%`, boxShadow: `0 0 8px ${t.glow}` } as React.CSSProperties}
-                  />
-                </div>
+                <p className="text-3xl md:text-4xl font-bold mb-1" style={{ color: t.text }}>{s.num}</p>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">{s.label}</p>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* marquee strip below cards */}
+      {/* Marquee */}
       <div className="mt-20 reveal-child" style={{ "--reveal-delay": "0.6s" } as React.CSSProperties}>
         <TechMarquee />
       </div>

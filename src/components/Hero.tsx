@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Mail, Quote, ArrowDown } from "lucide-react";
+import { Mail } from "lucide-react";
 import heroCharacter from "@/assets/hero-character.png";
 import { useCountUp } from "@/hooks/useCountUp";
 
@@ -7,11 +7,11 @@ const TILT_DEG = 72;
 const TILT_RAD = (TILT_DEG * Math.PI) / 180;
 
 const BADGES = [
-  { label: "React", tone: "orange", radiusX: 195, speed: 0.45, startAngle: 0 },
-  { label: "TS", tone: "blue", radiusX: 195, speed: 0.45, startAngle: 120 },
-  { label: "Node", tone: "green", radiusX: 195, speed: 0.45, startAngle: 240 },
-  { label: "Next", tone: "yellow", radiusX: 130, speed: 0.65, startAngle: 60 },
-  { label: "Python", tone: "pink", radiusX: 130, speed: 0.65, startAngle: 220 },
+  { label: "React", tone: "orange", radiusX: 200, speed: 0.40, startAngle: 0 },
+  { label: "TS", tone: "blue", radiusX: 200, speed: 0.40, startAngle: 120 },
+  { label: "Node", tone: "green", radiusX: 200, speed: 0.40, startAngle: 240 },
+  { label: "Next", tone: "yellow", radiusX: 135, speed: 0.60, startAngle: 60 },
+  { label: "Python", tone: "pink", radiusX: 135, speed: 0.60, startAngle: 220 },
 ] as const;
 
 const TONE_GRADIENT: Record<string, string> = {
@@ -32,11 +32,30 @@ const TONE_SHADOW: Record<string, string> = {
 function StatCounter({ value, label }: { value: string; label: string }) {
   const { ref, display } = useCountUp(value);
   return (
-    <div>
+    <div className="text-center">
       <p ref={ref as React.RefObject<HTMLParagraphElement>}
         className="text-2xl font-bold text-gradient-primary tabular-nums">{display}</p>
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
     </div>
+  );
+}
+
+// Magnetic button effect
+function MagneticBtn({ children, className, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const onMove = (e: React.MouseEvent) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) * 0.35;
+    const y = (e.clientY - r.top - r.height / 2) * 0.35;
+    el.style.transform = `translate(${x}px, ${y}px)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = "translate(0,0)"; };
+  return (
+    <a ref={ref} href={href} onMouseMove={onMove} onMouseLeave={onLeave}
+      className={className} style={{ transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)" }} {...props}>
+      {children}
+    </a>
   );
 }
 
@@ -44,20 +63,21 @@ export function Hero({ name, role }: { name: string; role: string }) {
   const badgeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
   const startRef = useRef<number | null>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
+  // Orbital badges
   useEffect(() => {
     function frame(ts: number) {
       if (startRef.current === null) startRef.current = ts;
       const elapsed = (ts - startRef.current) / 1000;
       BADGES.forEach((b, i) => {
-        const el = badgeRefs.current[i];
-        if (!el) return;
+        const el = badgeRefs.current[i]; if (!el) return;
         const angle = (b.startAngle * Math.PI) / 180 + elapsed * b.speed * (Math.PI / 180) * 60;
         const x = b.radiusX * Math.cos(angle);
         const y = b.radiusX * Math.cos(TILT_RAD) * Math.sin(angle);
         const depth = Math.sin(angle);
         const scale = 0.72 + 0.28 * (depth + 1) / 2;
-        const opacity = 0.40 + 0.60 * (depth + 1) / 2;
+        const opacity = 0.4 + 0.6 * (depth + 1) / 2;
         el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
         el.style.opacity = String(opacity);
         el.style.zIndex = depth > 0 ? "20" : "2";
@@ -68,49 +88,85 @@ export function Hero({ name, role }: { name: string; role: string }) {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
+  // Subtle parallax on scroll
+  useEffect(() => {
+    const onScroll = () => {
+      const el = heroRef.current; if (!el) return;
+      const y = window.scrollY;
+      el.style.transform = `translateY(${y * 0.25}px)`;
+      el.style.opacity = String(1 - y / 600);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <section id="home" className="relative min-h-screen overflow-hidden pt-32 pb-12 px-6 md:px-12 lg:px-20">
+      {/* Layered background */}
       <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
-      <div className="absolute -top-40 -right-20 h-[600px] w-[600px] rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 -left-40 h-[400px] w-[400px] rounded-full bg-[oklch(0.55_0.18_250)]/5 blur-3xl pointer-events-none" />
+      <div className="absolute -top-40 -right-20 h-[700px] w-[700px] rounded-full bg-primary/8 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 -left-40 h-[500px] w-[500px] rounded-full bg-[oklch(0.55_0.18_250)]/6 blur-[100px] pointer-events-none" />
+      {/* Subtle grid */}
+      <div className="absolute inset-0 hero-grid pointer-events-none opacity-30" />
 
-      <div className="relative grid lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto">
+      <div ref={heroRef} className="relative grid lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto" style={{ willChange: "transform,opacity" }}>
         {/* LEFT */}
         <div className="hero-copy">
           <div className="inline-flex items-center gap-2 glass-card rounded-full px-4 py-2 mb-6">
-            <span className="h-2 w-2 rounded-full bg-[oklch(0.72_0.17_138)] animate-pulse" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[oklch(0.72_0.17_138)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[oklch(0.72_0.17_138)]" />
+            </span>
             <span className="text-xs font-medium text-muted-foreground">Open to opportunities</span>
           </div>
+
           <p className="text-lg md:text-xl text-muted-foreground mb-2">
             Hey, I am <span className="text-primary font-semibold">{name}</span>
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-6">
-            <span className="text-gradient-primary">{role}</span>
+            <span className="text-gradient-primary hero-role-text">{role}</span>
           </h1>
-          <p className="text-base md:text-lg text-muted-foreground max-w-md mb-10">
+          <p className="text-base md:text-lg text-muted-foreground max-w-md mb-10 leading-relaxed">
             CS student building scalable web platforms and AI-powered automation tools. Strong interest in intelligent software systems and developer tooling.
           </p>
+
           <div className="flex items-center gap-3 mb-10">
-            <a href="#connect" className="rounded-full bg-gradient-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-glow transition-smooth hover:opacity-90">Hire Me</a>
-            <a href="#projects" className="glass-btn rounded-full px-7 py-3.5 text-base font-semibold transition-smooth hover:text-primary">See Work</a>
-            <a href="mailto:adityatomar4877@gmail.com" aria-label="Email" className="glass-btn flex h-12 w-12 items-center justify-center rounded-full">
+            <MagneticBtn href="#connect"
+              className="rounded-full bg-gradient-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90 transition-opacity">
+              Hire Me
+            </MagneticBtn>
+            <MagneticBtn href="#projects"
+              className="glass-btn rounded-full px-7 py-3.5 text-base font-semibold hover:text-primary transition-smooth">
+              See Work
+            </MagneticBtn>
+            <MagneticBtn href="mailto:adityatomar4877@gmail.com" aria-label="Email"
+              className="glass-btn flex h-12 w-12 items-center justify-center rounded-full">
               <Mail className="h-5 w-5" />
-            </a>
+            </MagneticBtn>
           </div>
-          {/* Animated counters */}
-          <div className="flex items-center gap-8 mb-10 divide-x divide-border/40">
+
+          {/* Stats */}
+          <div className="hero-stats-row mb-10">
             <StatCounter value="4" label="Projects" />
-            <div className="pl-8"><StatCounter value="2029" label="Graduating" /></div>
-            <div className="pl-8"><StatCounter value="3" label="Hackathons" /></div>
+            <div className="h-8 w-px bg-border/40" />
+            <StatCounter value="2029" label="Graduating" />
+            <div className="h-8 w-px bg-border/40" />
+            <StatCounter value="3" label="Hackathons" />
           </div>
-          <div className="h-px w-3/4 bg-gradient-to-r from-border to-transparent mb-8" />
-          <div className="glass-card max-w-md rounded-2xl p-5">
-            <Quote className="h-6 w-6 text-primary mb-2" />
-            <p className="text-sm text-foreground/90 leading-relaxed mb-4">
-              3rd Runner-Up at HackSetu 24-Hour Hackathon. CTF Winner at Amity Coding Club. Building real products that solve real problems.
-            </p>
-            <div className="flex items-center gap-3 pt-3 border-t border-white/10">
-              <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground">AT</div>
+
+          <div className="h-px w-3/4 bg-gradient-to-r from-primary/30 to-transparent mb-8" />
+
+          {/* Award badge */}
+          <div className="glass-card max-w-md rounded-2xl p-5 hero-award-card">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-lg">🏆</div>
+              <div>
+                <p className="text-sm font-semibold mb-1">3rd Runner-Up · HackSetu 24h</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">CTF Winner · Brand Combat Champion · Building real products that solve real problems.</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
+              <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground">AT</div>
               <div>
                 <p className="text-sm font-semibold">Aditya Tomar</p>
                 <p className="text-xs text-muted-foreground">Amity University MP · CS '29</p>
@@ -121,11 +177,13 @@ export function Hero({ name, role }: { name: string; role: string }) {
 
         {/* RIGHT — orbiting */}
         <div className="relative h-[500px] md:h-[600px] lg:h-[680px] flex items-center justify-center">
-          <div className="absolute inset-12 rounded-full bg-primary/18 blur-3xl" style={{ zIndex: 1 }} />
-          <div className="absolute rounded-full border border-primary/14 pointer-events-none"
-            style={{ width: "390px", height: "390px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
-          <div className="absolute rounded-full border border-primary/8 pointer-events-none"
-            style={{ width: "265px", height: "265px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
+          <div className="absolute inset-12 rounded-full bg-primary/15 blur-3xl" style={{ zIndex: 1 }} />
+          {/* Orbit rings */}
+          <div className="absolute rounded-full border border-primary/12 pointer-events-none hero-ring-spin"
+            style={{ width: "410px", height: "410px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
+          <div className="absolute rounded-full border border-primary/7 pointer-events-none hero-ring-spin-reverse"
+            style={{ width: "280px", height: "280px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
+          {/* Badges */}
           <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
             {BADGES.map((b, i) => (
               <div key={b.label} ref={(el) => { badgeRefs.current[i] = el; }}
@@ -136,14 +194,15 @@ export function Hero({ name, role }: { name: string; role: string }) {
             ))}
           </div>
           <img src={heroCharacter} alt="Aditya Tomar"
-            className="relative max-h-full w-auto object-contain drop-shadow-[0_30px_60px_rgba(255,120,40,0.35)]"
+            className="relative max-h-full w-auto object-contain drop-shadow-[0_30px_60px_rgba(255,120,40,0.35)] hero-character-float"
             style={{ zIndex: 10 }} />
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40 animate-bounce">
-        <ArrowDown className="h-4 w-4" />
-        <span className="text-xs">Scroll</span>
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+        <div className="hero-scroll-mouse" />
+        <span className="text-xs tracking-widest uppercase text-muted-foreground">Scroll</span>
       </div>
     </section>
   );
