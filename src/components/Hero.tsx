@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mail } from "lucide-react";
 import heroCharacter from "@/assets/hero-character.png";
 import { useCountUp } from "@/hooks/useCountUp";
@@ -7,47 +7,54 @@ const TILT_DEG = 72;
 const TILT_RAD = (TILT_DEG * Math.PI) / 180;
 
 const BADGES = [
-  { label: "React", tone: "orange", radiusX: 200, speed: 0.40, startAngle: 0 },
-  { label: "TS", tone: "blue", radiusX: 200, speed: 0.40, startAngle: 120 },
-  { label: "Node", tone: "green", radiusX: 200, speed: 0.40, startAngle: 240 },
-  { label: "Next", tone: "yellow", radiusX: 135, speed: 0.60, startAngle: 60 },
-  { label: "Python", tone: "pink", radiusX: 135, speed: 0.60, startAngle: 220 },
+  { label: "React", tone: "orange", radiusX: 195, speed: 0.42, startAngle: 0 },
+  { label: "TS", tone: "teal", radiusX: 195, speed: 0.42, startAngle: 120 },
+  { label: "Node", tone: "green", radiusX: 195, speed: 0.42, startAngle: 240 },
+  { label: "Next", tone: "yellow", radiusX: 130, speed: 0.62, startAngle: 60 },
+  { label: "Python", tone: "pink", radiusX: 130, speed: 0.62, startAngle: 220 },
 ] as const;
 
 const TONE_GRADIENT: Record<string, string> = {
-  orange: "linear-gradient(135deg, oklch(0.7 0.21 45), oklch(0.78 0.19 55))",
-  blue: "linear-gradient(135deg, oklch(0.52 0.20 250), oklch(0.68 0.17 240))",
+  orange: "linear-gradient(135deg, oklch(0.73 0.22 48), oklch(0.80 0.20 55))",
+  teal: "linear-gradient(135deg, oklch(0.72 0.18 185), oklch(0.82 0.15 195))",
   yellow: "linear-gradient(135deg, oklch(0.82 0.19 88), oklch(0.72 0.19 68))",
   green: "linear-gradient(135deg, oklch(0.62 0.19 148), oklch(0.72 0.17 138))",
   pink: "linear-gradient(135deg, oklch(0.68 0.20 330), oklch(0.78 0.18 315))",
 };
 const TONE_SHADOW: Record<string, string> = {
-  orange: "0 0 24px 6px oklch(0.7 0.21 45 / 0.6)",
-  blue: "0 0 24px 6px oklch(0.55 0.18 250 / 0.55)",
-  yellow: "0 0 24px 6px oklch(0.82 0.19 88 / 0.50)",
-  green: "0 0 24px 6px oklch(0.65 0.18 150 / 0.55)",
-  pink: "0 0 24px 6px oklch(0.68 0.20 330 / 0.55)",
+  orange: "0 0 20px 5px oklch(0.73 0.22 48 / 0.55)",
+  teal: "0 0 20px 5px oklch(0.75 0.17 185 / 0.55)",
+  yellow: "0 0 20px 5px oklch(0.82 0.19 88 / 0.45)",
+  green: "0 0 20px 5px oklch(0.65 0.18 150 / 0.50)",
+  pink: "0 0 20px 5px oklch(0.68 0.20 330 / 0.50)",
 };
 
-function StatCounter({ value, label }: { value: string; label: string }) {
+const ROLE_WORDS = ["Developer", "Builder", "Engineer", "Creator"];
+
+function StatCounter({ value, label, accent }: { value: string; label: string; accent?: "teal" }) {
   const { ref, display } = useCountUp(value);
   return (
     <div className="text-center">
-      <p ref={ref as React.RefObject<HTMLParagraphElement>}
-        className="text-2xl font-bold text-gradient-primary tabular-nums">{display}</p>
-      <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+      <p
+        ref={ref as React.RefObject<HTMLParagraphElement>}
+        className={`text-2xl font-bold tabular-nums ${accent === "teal" ? "text-teal" : "text-gradient-primary"}`}
+      >
+        {display}
+      </p>
+      <p className="text-xs text-muted-foreground mt-0.5 font-mono tracking-wide">{label}</p>
     </div>
   );
 }
 
-// Magnetic button effect
-function MagneticBtn({ children, className, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }) {
+function MagneticBtn({
+  children, className, href, ...props
+}: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const onMove = (e: React.MouseEvent) => {
     const el = ref.current; if (!el) return;
     const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left - r.width / 2) * 0.35;
-    const y = (e.clientY - r.top - r.height / 2) * 0.35;
+    const x = (e.clientX - r.left - r.width / 2) * 0.38;
+    const y = (e.clientY - r.top - r.height / 2) * 0.38;
     el.style.transform = `translate(${x}px, ${y}px)`;
   };
   const onLeave = () => { if (ref.current) ref.current.style.transform = "translate(0,0)"; };
@@ -59,11 +66,27 @@ function MagneticBtn({ children, className, href, ...props }: React.AnchorHTMLAt
   );
 }
 
-export function Hero({ name, role }: { name: string; role: string }) {
+export function Hero({ name, role: _role }: { name: string; role: string }) {
   const badgeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number>(0);
   const startRef = useRef<number | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+
+  // Cycling role words
+  const [roleIdx, setRoleIdx] = useState(0);
+  const [cycling, setCycling] = useState<"in" | "out" | "idle">("idle");
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCycling("out");
+      setTimeout(() => {
+        setRoleIdx((i) => (i + 1) % ROLE_WORDS.length);
+        setCycling("in");
+        setTimeout(() => setCycling("idle"), 450);
+      }, 350);
+    }, 2800);
+    return () => clearInterval(id);
+  }, []);
 
   // Orbital badges
   useEffect(() => {
@@ -77,7 +100,7 @@ export function Hero({ name, role }: { name: string; role: string }) {
         const y = b.radiusX * Math.cos(TILT_RAD) * Math.sin(angle);
         const depth = Math.sin(angle);
         const scale = 0.72 + 0.28 * (depth + 1) / 2;
-        const opacity = 0.4 + 0.6 * (depth + 1) / 2;
+        const opacity = 0.45 + 0.55 * (depth + 1) / 2;
         el.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
         el.style.opacity = String(opacity);
         el.style.zIndex = depth > 0 ? "20" : "2";
@@ -88,60 +111,107 @@ export function Hero({ name, role }: { name: string; role: string }) {
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  // Subtle parallax on scroll
+  // Parallax on scroll
   useEffect(() => {
     const onScroll = () => {
       const el = heroRef.current; if (!el) return;
       const y = window.scrollY;
-      el.style.transform = `translateY(${y * 0.25}px)`;
-      el.style.opacity = String(1 - y / 600);
+      el.style.transform = `translateY(${y * 0.22}px)`;
+      el.style.opacity = String(1 - y / 650);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const wordClass =
+    cycling === "out" ? "word-cycling-out" :
+      cycling === "in" ? "word-cycling-in" : "";
+
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden pt-32 pb-12 px-6 md:px-12 lg:px-20">
+    <section id="home" className="relative min-h-screen overflow-hidden pt-32 pb-16 px-6 md:px-12 lg:px-20 noise-overlay">
       {/* Layered background */}
       <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
-      <div className="absolute -top-40 -right-20 h-[700px] w-[700px] rounded-full bg-primary/8 blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/2 -left-40 h-[500px] w-[500px] rounded-full bg-[oklch(0.55_0.18_250)]/6 blur-[100px] pointer-events-none" />
-      {/* Subtle grid */}
-      <div className="absolute inset-0 hero-grid pointer-events-none opacity-30" />
+      <div className="absolute -top-48 -right-24 h-[750px] w-[750px] rounded-full bg-primary/6 blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/2 -left-40 h-[550px] w-[550px] rounded-full" style={{ background: "oklch(0.50 0.15 185 / 0.08)", filter: "blur(110px)" }} />
+      <div className="absolute inset-0 hero-grid pointer-events-none opacity-40" />
 
-      <div ref={heroRef} className="relative grid lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto" style={{ willChange: "transform,opacity" }}>
-        {/* LEFT */}
+      {/* Decorative diagonal lines */}
+      <div className="absolute top-28 right-0 w-[40%] h-px" style={{ background: "linear-gradient(to left, transparent, oklch(0.73 0.22 48 / 0.12))" }} />
+      <div className="absolute bottom-24 left-0 w-[30%] h-px" style={{ background: "linear-gradient(to right, transparent, oklch(0.80 0.17 185 / 0.12))" }} />
+
+      <div
+        ref={heroRef}
+        className="relative grid lg:grid-cols-2 gap-10 items-center max-w-7xl mx-auto"
+        style={{ willChange: "transform,opacity" }}
+      >
+        {/* ── LEFT ── */}
         <div className="hero-copy">
-          <div className="inline-flex items-center gap-2 glass-card rounded-full px-4 py-2 mb-6">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[oklch(0.72_0.17_138)] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[oklch(0.72_0.17_138)]" />
+          {/* Code tag */}
+          <div className="inline-flex items-center gap-2 mb-5">
+            <span className="font-mono text-sm" style={{ color: "oklch(0.80 0.17 185)" }}>{"<"}</span>
+            <span className="font-mono text-xs font-medium tracking-widest uppercase" style={{ color: "oklch(0.58 0.020 60)" }}>
+              cs_student
             </span>
-            <span className="text-xs font-medium text-muted-foreground">Open to opportunities</span>
+            <span className="font-mono text-sm" style={{ color: "oklch(0.80 0.17 185)" }}>{"/>"}</span>
+            <span className="relative flex h-2 w-2 ml-1">
+              <span className="ping-dot absolute inline-flex h-full w-full rounded-full" style={{ background: "oklch(0.72 0.17 138)" }} />
+              <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: "oklch(0.72 0.17 138)" }} />
+            </span>
+            <span className="text-xs text-muted-foreground">Open to work</span>
           </div>
 
-          <p className="text-lg md:text-xl text-muted-foreground mb-2">
-            Hey, I am <span className="text-primary font-semibold">{name}</span>
-          </p>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-6">
-            <span className="text-gradient-primary hero-role-text">{role}</span>
-          </h1>
-          <p className="text-base md:text-lg text-muted-foreground max-w-md mb-10 leading-relaxed">
-            CS student building scalable web platforms and AI-powered automation tools. Strong interest in intelligent software systems and developer tooling.
+          {/* Name */}
+          <p className="text-base md:text-lg text-muted-foreground mb-1">
+            Hey, I'm{" "}
+            <span className="font-bold" style={{ color: "oklch(0.80 0.17 185)" }}>{name}</span>
           </p>
 
+          {/* Big title */}
+          <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[0.92] mb-2 tracking-tight">
+            <span
+              className="glitch hero-role-text block"
+              data-text="Upcoming"
+            >
+              Upcoming
+            </span>
+          </h1>
+
+          {/* Cycling word */}
+          <div className="overflow-hidden mb-6" style={{ height: "1.25em", paddingBottom: "0.1em" }}>
+            <span
+              key={roleIdx}
+              className={`text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.15] tracking-tight block text-stroke ${wordClass}`}
+            >
+              {ROLE_WORDS[roleIdx]}
+            </span>
+          </div>
+
+          <p className="text-sm md:text-base text-muted-foreground max-w-md mb-10 leading-relaxed font-mono">
+            CS student building scalable web platforms and AI-powered automation
+            tools — strong interest in intelligent systems and developer tooling.
+          </p>
+
+          {/* CTA Buttons */}
           <div className="flex items-center gap-3 mb-10">
-            <MagneticBtn href="#connect"
-              className="rounded-full bg-gradient-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-glow hover:opacity-90 transition-opacity">
+            <MagneticBtn
+              href="#connect"
+              className="rounded-full bg-gradient-primary px-7 py-3.5 text-sm font-semibold shadow-glow hover:opacity-90 transition-opacity"
+              style={{ color: "oklch(0.09 0.01 30)" }}
+            >
               Hire Me
             </MagneticBtn>
-            <MagneticBtn href="#projects"
-              className="glass-btn rounded-full px-7 py-3.5 text-base font-semibold hover:text-primary transition-smooth">
+            <MagneticBtn
+              href="#projects"
+              className="glass-btn rounded-full px-7 py-3.5 text-sm font-semibold hover:text-primary transition-smooth"
+            >
               See Work
             </MagneticBtn>
-            <MagneticBtn href="mailto:adityatomar4877@gmail.com" aria-label="Email"
-              className="glass-btn flex h-12 w-12 items-center justify-center rounded-full">
-              <Mail className="h-5 w-5" />
+            <MagneticBtn
+              href="mailto:adityatomar4877@gmail.com"
+              aria-label="Email"
+              className="glass-btn flex h-12 w-12 items-center justify-center rounded-full hover:text-primary transition-smooth"
+            >
+              <Mail className="h-4 w-4" />
             </MagneticBtn>
           </div>
 
@@ -149,60 +219,127 @@ export function Hero({ name, role }: { name: string; role: string }) {
           <div className="hero-stats-row mb-10">
             <StatCounter value="4" label="Projects" />
             <div className="h-8 w-px bg-border/40" />
-            <StatCounter value="2029" label="Graduating" />
+            <StatCounter value="2029" label="Graduating" accent="teal" />
             <div className="h-8 w-px bg-border/40" />
             <StatCounter value="3" label="Hackathons" />
           </div>
 
-          <div className="h-px w-3/4 bg-gradient-to-r from-primary/30 to-transparent mb-8" />
+          <div className="diagonal-rule mb-8 w-3/4" />
 
           {/* Award badge */}
-          <div className="glass-card max-w-md rounded-2xl p-5 hero-award-card">
+          <div className="glass-card max-w-sm rounded-2xl p-4 hero-award-card border border-primary/15">
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-lg">🏆</div>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-base">🏆</div>
               <div>
-                <p className="text-sm font-semibold mb-1">3rd Runner-Up · HackSetu 24h</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">CTF Winner · Brand Combat Champion · Building real products that solve real problems.</p>
+                <p className="text-sm font-bold mb-0.5">3rd Runner-Up · HackSetu 24h</p>
+                <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+                  CTF Winner · Brand Combat Champion
+                </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
-              <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-sm font-bold text-primary-foreground">AT</div>
+            <div className="mt-3 flex items-center gap-3 pt-3 border-t border-white/8">
+              <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-xs font-bold" style={{ color: "oklch(0.09 0.01 30)" }}>
+                AT
+              </div>
               <div>
                 <p className="text-sm font-semibold">Aditya Tomar</p>
-                <p className="text-xs text-muted-foreground">Amity University MP · CS '29</p>
+                <p className="text-xs text-muted-foreground font-mono">Amity University MP · CS '29</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* RIGHT — orbiting */}
-        <div className="relative h-[500px] md:h-[600px] lg:h-[680px] flex items-center justify-center">
-          <div className="absolute inset-12 rounded-full bg-primary/15 blur-3xl" style={{ zIndex: 1 }} />
+        {/* ── RIGHT — orbiting ── */}
+        <div className="relative h-[500px] md:h-[580px] lg:h-[660px] flex items-center justify-center">
+          {/* Glow core */}
+          <div
+            className="absolute rounded-full glow-pulse"
+            style={{ width: "280px", height: "280px", background: "radial-gradient(circle, oklch(0.73 0.22 48 / 0.12) 0%, transparent 70%)", zIndex: 1 }}
+          />
+          <div
+            className="absolute rounded-full teal-pulse"
+            style={{ width: "380px", height: "380px", background: "radial-gradient(circle, oklch(0.80 0.17 185 / 0.06) 0%, transparent 70%)", zIndex: 1 }}
+          />
+
           {/* Orbit rings */}
-          <div className="absolute rounded-full border border-primary/12 pointer-events-none hero-ring-spin"
-            style={{ width: "410px", height: "410px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
-          <div className="absolute rounded-full border border-primary/7 pointer-events-none hero-ring-spin-reverse"
-            style={{ width: "280px", height: "280px", transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`, zIndex: 3 }} />
-          {/* Badges */}
+          <div
+            className="absolute rounded-full border hero-ring-spin pointer-events-none"
+            style={{
+              width: "400px", height: "400px",
+              transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`,
+              borderColor: "oklch(0.73 0.22 48 / 0.10)",
+              zIndex: 3,
+            }}
+          />
+          <div
+            className="absolute rounded-full border hero-ring-spin-reverse pointer-events-none"
+            style={{
+              width: "270px", height: "270px",
+              transform: `scaleY(${Math.cos(TILT_RAD).toFixed(3)})`,
+              borderColor: "oklch(0.80 0.17 185 / 0.08)",
+              zIndex: 3,
+            }}
+          />
+
+          {/* Orbital badges */}
           <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
             {BADGES.map((b, i) => (
-              <div key={b.label} ref={(el) => { badgeRefs.current[i] = el; }}
-                className="absolute top-1/2 left-1/2 flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-2xl text-sm md:text-base font-bold text-white border border-white/20"
-                style={{ background: TONE_GRADIENT[b.tone], boxShadow: TONE_SHADOW[b.tone], willChange: "transform, opacity" }}>
+              <div
+                key={b.label}
+                ref={(el) => { badgeRefs.current[i] = el; }}
+                className="absolute top-1/2 left-1/2 flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl text-xs md:text-sm font-bold border font-mono"
+                style={{
+                  background: TONE_GRADIENT[b.tone],
+                  boxShadow: TONE_SHADOW[b.tone],
+                  borderColor: "oklch(1 0 0 / 0.15)",
+                  color: "oklch(0.09 0.01 30)",
+                  willChange: "transform, opacity",
+                  letterSpacing: "-0.02em",
+                }}
+              >
                 {b.label}
               </div>
             ))}
           </div>
-          <img src={heroCharacter} alt="Aditya Tomar"
-            className="relative max-h-full w-auto object-contain drop-shadow-[0_30px_60px_rgba(255,120,40,0.35)] hero-character-float"
-            style={{ zIndex: 10 }} />
+
+          {/* Character */}
+          <div className="relative" style={{ zIndex: 10 }}>
+            {/* Bracket frame decoration */}
+            <div
+              className="absolute -inset-3 pointer-events-none"
+              style={{
+                borderTop: "1.5px solid oklch(0.80 0.17 185 / 0.3)",
+                borderLeft: "1.5px solid oklch(0.80 0.17 185 / 0.3)",
+                borderRadius: "4px 0 0 0",
+                top: 0, left: 0, width: "40px", height: "40px",
+              }}
+            />
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                borderBottom: "1.5px solid oklch(0.73 0.22 48 / 0.3)",
+                borderRight: "1.5px solid oklch(0.73 0.22 48 / 0.3)",
+                borderRadius: "0 0 4px 0",
+                bottom: 0, right: 0, width: "40px", height: "40px",
+              }}
+            />
+            <img
+              src={heroCharacter}
+              alt="Aditya Tomar"
+              className="relative max-h-full w-auto object-contain hero-character-float"
+              style={{
+                maxHeight: "420px",
+                filter: "drop-shadow(0 30px 60px oklch(0.73 0.22 48 / 0.35)) drop-shadow(0 0 120px oklch(0.80 0.17 185 / 0.15))",
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
         <div className="hero-scroll-mouse" />
-        <span className="text-xs tracking-widest uppercase text-muted-foreground">Scroll</span>
+        <span className="text-xs tracking-[0.3em] uppercase text-muted-foreground font-mono">scroll</span>
       </div>
     </section>
   );
