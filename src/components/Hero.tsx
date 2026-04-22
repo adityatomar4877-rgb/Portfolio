@@ -29,7 +29,7 @@ const TONE_SHADOW: Record<string, string> = {
   pink: "0 0 20px 5px oklch(0.68 0.20 330 / 0.50)",
 };
 
-const ROLE_WORDS = ["Developer", "Builder", "Engineer", "Creator"];
+const ROLE_WORDS = ["Developer", "Builder", "Engineer", "Creator", "Gamer"];
 
 function StatCounter({ value, label, accent }: { value: string; label: string; accent?: "teal" }) {
   const { ref, display } = useCountUp(value);
@@ -145,7 +145,7 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
         style={{ willChange: "transform,opacity" }}
       >
         {/* ── LEFT ── */}
-        <div className="hero-copy">
+        <div className="hero-copy" style={{ position: "relative", zIndex: 30 }}>
           {/* Code tag */}
           <div className="inline-flex items-center gap-2 mb-5">
             <span className="font-mono text-sm" style={{ color: "oklch(0.80 0.17 185)" }}>{"<"}</span>
@@ -177,7 +177,7 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
           </h1>
 
           {/* Cycling word */}
-          <div className="overflow-hidden mb-6" style={{ height: "1.25em", paddingBottom: "0.1em" }}>
+          <div className="mb-6" style={{ position: "relative", zIndex: 31 }}>
             <span
               key={roleIdx}
               className={`text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.15] tracking-tight block text-stroke ${wordClass}`}
@@ -217,11 +217,11 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
 
           {/* Stats */}
           <div className="hero-stats-row mb-10">
-            <StatCounter value="4" label="Projects" />
+            <StatCounter value="10+" label="Projects" />
             <div className="h-8 w-px bg-border/40" />
             <StatCounter value="2029" label="Graduating" accent="teal" />
             <div className="h-8 w-px bg-border/40" />
-            <StatCounter value="3" label="Hackathons" />
+            <StatCounter value="5+" label="Hackathons" />
           </div>
 
           <div className="diagonal-rule mb-8 w-3/4" />
@@ -231,7 +231,7 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
             <div className="flex items-start gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-primary text-base">🏆</div>
               <div>
-                <p className="text-sm font-bold mb-0.5">3rd Runner-Up · HackSetu 24h</p>
+                <p className="text-sm font-bold mb-0.5">2nd Runner-Up · National Level Hackathon</p>
                 <p className="text-xs text-muted-foreground leading-relaxed font-mono">
                   CTF Winner · Brand Combat Champion
                 </p>

@@ -5,6 +5,10 @@
       "destination": "/client/assets/$1"
     },
     {
+      "source": "/resume.pdf",
+      "destination": "/client/resume.pdf"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api/index"
     }

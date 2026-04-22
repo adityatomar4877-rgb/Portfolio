@@ -261,7 +261,7 @@ export function Skills() {
           {[
             { num: "14+", label: "Technologies", color: "orange" },
             { num: "4", label: "Categories", color: "teal" },
-            { num: "2+", label: "Yrs Learning", color: "green" },
+            { num: "1", label: "Yrs Learning", color: "green" },
           ].map((s) => {
             const t = TONE[s.color];
             return (

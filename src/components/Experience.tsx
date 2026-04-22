@@ -17,7 +17,7 @@ const timeline = [
   {
     role: "HackSetu — 3rd Runner-Up",
     company: "24-Hour Hackathon",
-    period: "2024",
+    period: "2025",
     tone: "teal",
     points: [
       "Built a working prototype and shipped core features under 24-hour time pressure.",
@@ -27,7 +27,7 @@ const timeline = [
   {
     role: "CTF — Winner",
     company: "Amity Coding Club",
-    period: "2024",
+    period: "2025",
     tone: "green",
     points: [
       "Solved challenges in cryptography, web exploitation, and binary debugging.",
@@ -37,7 +37,7 @@ const timeline = [
   {
     role: "Brand Combat Winner · Ideathon 2nd Prize",
     company: "SISTec University Bhopal · Science Day",
-    period: "2023–24",
+    period: "2025-26",
     tone: "pink",
     points: [
       "Won the Brand Combat competition at SISTec University, Bhopal.",
@@ -175,7 +175,7 @@ export function Experience() {
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {["Full Stack Dev", "Data Structures", "OS", "AI/ML Fundamentals"].map((area) => (
+              {["Trying to be a (T_T!) Full Stack Dev", "OS", "CyberSecurity"].map((area) => (
                 <span
                   key={area}
                   className="text-xs px-2.5 py-1 rounded-full font-medium font-mono"
@@ -192,7 +192,7 @@ export function Experience() {
               style={{ borderTop: "1px solid oklch(0.73 0.22 48 / 0.12)" }}
             >
               {[
-                { val: "4th", label: "Semester", color: "orange" },
+                { val: "2nd", label: "Semester", color: "orange" },
                 { val: "CS", label: "Branch", color: "teal" },
                 { val: "'29", label: "Batch", color: "green" },
               ].map((m) => {
