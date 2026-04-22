@@ -46,6 +46,15 @@ function StatCounter({ value, label, accent }: { value: string; label: string; a
   );
 }
 
+function scrollToSection(href: string) {
+  if (!href.startsWith("#")) return;
+  const id = href.slice(1);
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function MagneticBtn({
   children, className, href, ...props
 }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { children: React.ReactNode }) {
@@ -58,13 +67,32 @@ function MagneticBtn({
     el.style.transform = `translate(${x}px, ${y}px)`;
   };
   const onLeave = () => { if (ref.current) ref.current.style.transform = "translate(0,0)"; };
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (href?.startsWith("#")) {
+      e.preventDefault();
+      scrollToSection(href);
+    }
+    // mailto: and everything else — do nothing, let the browser handle it naturally
+  };
+
   return (
-    <a ref={ref} href={href} onMouseMove={onMove} onMouseLeave={onLeave}
-      className={className} style={{ transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)" }} {...props}>
+    <a
+      ref={ref}
+      href={href}
+      onClick={handleClick}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className={className}
+      style={{ transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)" }}
+      {...props}
+    >
       {children}
     </a>
   );
 }
+
+
 
 export function Hero({ name, role: _role }: { name: string; role: string }) {
   const badgeRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -207,7 +235,9 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
               See Work
             </MagneticBtn>
             <MagneticBtn
-              href="mailto:adityatomar4877@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&to=adityatomar4877@gmail.com"
+              target="_blank"
+              rel="noreferrer"
               aria-label="Email"
               className="glass-btn flex h-12 w-12 items-center justify-center rounded-full hover:text-primary transition-smooth"
             >

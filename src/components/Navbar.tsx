@@ -9,6 +9,14 @@ const links = [
   { label: "Connect", href: "#connect", num: "04" },
 ];
 
+function scrollToSection(href: string) {
+  const id = href.replace("#", "");
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 export function Navbar({ name }: { name: string }) {
   const [active, setActive] = useState("home");
   const [scrolled, setScrolled] = useState(false);
@@ -37,7 +45,7 @@ export function Navbar({ name }: { name: string }) {
       >
         <nav className={`flex items-center justify-between gap-4 rounded-2xl ${scrolled ? "glass-card px-5 py-3" : ""}`}>
           {/* Logo monogram */}
-          <a href="#home" className="relative flex items-center gap-3 group">
+          <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection("#home"); }} className="relative flex items-center gap-3 group">
             <div
               className="flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold transition-transform group-hover:scale-105"
               style={{
@@ -62,6 +70,7 @@ export function Navbar({ name }: { name: string }) {
                 <li key={l.label}>
                   <a
                     href={l.href}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(l.href); }}
                     className="relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-smooth group"
                     style={{
                       background: isActive ? "oklch(0.73 0.22 48 / 0.12)" : "transparent",
@@ -139,7 +148,7 @@ export function Navbar({ name }: { name: string }) {
                 <li key={l.label}>
                   <a
                     href={l.href}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={(e) => { e.preventDefault(); scrollToSection(l.href); setMobileOpen(false); }}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-smooth"
                     style={{
                       background: active === l.href.replace("#", "") ? "oklch(0.73 0.22 48 / 0.12)" : "transparent",

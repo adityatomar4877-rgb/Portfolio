@@ -132,7 +132,9 @@ export function Connect() {
         {/* Email CTA */}
         <div className="reveal-child" style={{ "--reveal-delay": "0.12s" } as React.CSSProperties}>
           <a
-            href="mailto:adityatomar4877@gmail.com"
+            href="https://mail.google.com/mail/?view=cm&to=adityatomar4877@gmail.com"
+            target="_blank"
+            rel="noreferrer"
             className="group inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-sm font-semibold shadow-glow transition-smooth hover:opacity-90 mb-12"
             style={{
               background: "var(--gradient-primary)",
