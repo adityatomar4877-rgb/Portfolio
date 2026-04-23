@@ -5,10 +5,8 @@ Welcome to the source code for my personal portfolio! This project showcases my 
 ## 🚀 Live Demo
 
 <<<<<<< HEAD
-**[View Live Portfolio](https://portfolio-adityatomar4877-rgbs-projects.vercel.app/)** *(Note: Please update this link if your Vercel deployment URL is different!)*
-=======
-**[View Live Portfolio](https://portfolio-adityatomar4877-rgbs-projects.vercel.app/)
->>>>>>> 9db5a89d8b41e2a27da9e7b09358df2b57ba215d
+**[View Live Portfolio](https://portfolio-adityatomar4877-rgbs-projects.vercel.app/)** 
+
 
 ## 🛠️ Tech Stack
 
