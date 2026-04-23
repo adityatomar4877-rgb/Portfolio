@@ -4,7 +4,7 @@ Welcome to the source code for my personal portfolio! This project showcases my 
 
 ## 🚀 Live Demo
 
-**[View Live Portfolio]((https://portfolio-omega-two-epg8g3sy3l.vercel.app/#))** 
+**[View Live Portfolio](https://portfolio-omega-two-epg8g3sy3l.vercel.app/#)** 
 
 
 ## 🛠️ Tech Stack
