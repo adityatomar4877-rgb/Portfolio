@@ -2,14 +2,14 @@ import { useEffect, useState, useRef } from "react";
 
 const TERMINAL_LINES = [
     { text: "> INITIALIZING PORTFOLIO_v2.0.2", type: "prompt", delay: 0 },
-    { text: "  Loading modules...             [OK]", type: "ok", delay: 280 },
-    { text: "  Compiling React components...  [OK]", type: "ok", delay: 520 },
-    { text: "  Mounting TailwindCSS v4...     [OK]", type: "ok", delay: 740 },
-    { text: "> CHECKING ASSETS...", type: "prompt", delay: 920 },
-    { text: "  hero-character.png             [OK]", type: "ok", delay: 1080 },
-    { text: "  animations.css                 [OK]", type: "ok", delay: 1200 },
-    { text: "  projects.json                  [OK]", type: "ok", delay: 1320 },
-    { text: "> SYSTEM READY — Welcome, Dev.", type: "prompt", delay: 1520 },
+    { text: "  Loading modules...             [OK]", type: "ok", delay: 500 },
+    { text: "  Compiling React components...  [OK]", type: "ok", delay: 950 },
+    { text: "  Mounting TailwindCSS v4...     [OK]", type: "ok", delay: 1350 },
+    { text: "> CHECKING ASSETS...", type: "prompt", delay: 1700 },
+    { text: "  hero-character.png             [OK]", type: "ok", delay: 2000 },
+    { text: "  animations.css                 [OK]", type: "ok", delay: 2250 },
+    { text: "  projects.json                  [OK]", type: "ok", delay: 2500 },
+    { text: "> SYSTEM READY — Welcome, Dev.", type: "prompt", delay: 2800 },
 ];
 
 export function LoadingScreen({ onDone }: { onDone: () => void }) {
@@ -28,10 +28,10 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
         });
 
         // Show name letters after main lines
-        setTimeout(() => setShowName(true), 1800);
+        setTimeout(() => setShowName(true), 3200);
 
         // Progress bar
-        const dur = 2200;
+        const dur = 4000;
         const start = performance.now();
         const tick = (now: number) => {
             const t = Math.min((now - start) / dur, 1);
@@ -47,8 +47,8 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
             setTimeout(() => {
                 setWipeActive(true);
                 setTimeout(() => onDone(), 700);
-            }, 400);
-        }, 2600);
+            }, 500);
+        }, 4800);
     }, [onDone]);
 
     return (

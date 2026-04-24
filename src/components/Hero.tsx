@@ -80,13 +80,9 @@ function FlipCard() {
           <span className="hfc-corner hfc-corner--tl" />
           <span className="hfc-corner hfc-corner--br" />
 
-          {/* LEFT — photo */}
+          {/* LEFT — avatar fills the column */}
           <div className="hfc-photo-col">
-            <div className="hfc-photo-ring">
-              <div className="hfc-photo-inner">
-                <img src={heroCharacter} alt="Aditya Tomar" className="hfc-photo-img" />
-              </div>
-            </div>
+            <img src={heroCharacter} alt="Aditya Tomar" className="hfc-photo-img" />
             <div className="hfc-status-pill">
               <span className="hfc-status-dot" />
               <span className="hfc-status-label font-mono">Open to work</span>
@@ -306,7 +302,7 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
         </div>
 
         {/* ── RIGHT — horizontal flip card ── */}
-        <div className="relative flex items-center justify-center h-[500px] md:h-[580px] lg:h-[620px]">
+        <div className="relative flex items-start justify-center pt-8 h-[500px] md:h-[580px] lg:h-[620px]">
           <FlipCard />
         </div>
       </div>
