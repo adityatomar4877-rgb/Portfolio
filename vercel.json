@@ -9,6 +9,10 @@
       "destination": "/client/resume.pdf"
     },
     {
+      "source": "/favicon.svg",
+      "destination": "/client/favicon.svg"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api/index"
     }
