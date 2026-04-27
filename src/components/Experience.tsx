@@ -128,7 +128,7 @@ export function Experience() {
           letterSpacing: "-0.04em",
         }}
       >
-        2024
+        2025
       </div>
 
       <div className="relative max-w-7xl mx-auto">

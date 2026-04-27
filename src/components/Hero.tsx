@@ -203,8 +203,8 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
     const onScroll = () => {
       const el = heroRef.current; if (!el) return;
       const y = window.scrollY;
-      el.style.transform = `translateY(${y * 0.22}px)`;
-      el.style.opacity = String(1 - y / 650);
+      el.style.transform = `translateY(${y * 0.15}px)`;
+      el.style.opacity = String(Math.max(0.3, 1 - y / 800));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -274,11 +274,11 @@ export function Hero({ name, role: _role }: { name: string; role: string }) {
           </div>
 
           <div className="hero-stats-row mb-10">
-            <StatCounter value="10+" label="Projects" />
+            <StatCounter value="4+" label="Projects" />
             <div className="h-8 w-px bg-border/40" />
-            <StatCounter value="2029" label="Graduating" accent="teal" />
+            <StatCounter value="3+" label="Hackathons" accent="teal" />
             <div className="h-8 w-px bg-border/40" />
-            <StatCounter value="5+" label="Hackathons" />
+            <StatCounter value="3" label="Awards" />
           </div>
 
           <div className="diagonal-rule mb-8 w-3/4" />
