@@ -43,7 +43,7 @@ export function Navbar({ name }: { name: string }) {
       <header
         className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-20 transition-smooth ${scrolled ? "py-3" : "py-5"}`}
       >
-        <nav className={`flex items-center justify-between gap-4 rounded-2xl ${scrolled ? "glass-card px-5 py-3" : ""}`}>
+        <nav className={`flex items-center justify-between gap-4 rounded-2xl transition-smooth ${scrolled ? "glass-card px-5 py-3" : "px-5 py-3 bg-transparent"}`}>
           {/* Logo monogram */}
           <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection("#home"); }} className="relative flex items-center gap-3 group">
             <div
@@ -74,7 +74,7 @@ export function Navbar({ name }: { name: string }) {
                     className="relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-smooth group"
                     style={{
                       background: isActive ? "oklch(0.73 0.22 48 / 0.12)" : "transparent",
-                      color: isActive ? "oklch(0.73 0.22 48)" : "oklch(0.58 0.020 60)",
+                      color: isActive ? "oklch(0.73 0.22 48)" : "oklch(0.80 0.015 60)",
                     }}
                   >
                     <span

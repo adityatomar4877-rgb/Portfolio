@@ -23,7 +23,7 @@ const projects = [
     desc: "Campus safety platform with SOS emergency alerts, ride sharing, and a peer service marketplace. Real-time location-based emergency response.",
     tags: ["Next.js", "Firebase", "Tailwind CSS"],
     live: "amityconnect.vercel.app",
-    github: "#",
+    github: "https://github.com/adityatomar4877-rgb/AmityConnect",
     tone: "orange",
     year: "2026",
     num: "01",
@@ -35,7 +35,7 @@ const projects = [
     desc: "Mental wellness platform with counseling sessions, peer support, and mood tracking. AI support assistant and real-time appointment booking.",
     tags: ["React", "TypeScript", "Supabase", "Tailwind CSS"],
     live: "man-mitra-weld.vercel.app",
-    github: "#",
+    github: "https://github.com/adityatomar4877-rgb/Mann-Mitra",
     tone: "teal",
     year: "2025",
     num: "02",
@@ -47,7 +47,7 @@ const projects = [
     desc: "Converts natural language test instructions into executable browser tests with self-healing element detection and auto-generated bug reports.",
     tags: ["Playwright", "Node.js", "AI Integration"],
     live: "",
-    github: "#",
+    github: "https://github.com/adityatomar4877-rgb/Nova",
     tone: "green",
     year: "2026",
     num: "03",
@@ -59,7 +59,7 @@ const projects = [
     desc: "Wellness dashboard for doctors and patients. Dosha-based diet planning, Ayurvedic health questionnaires, and clinical reporting.",
     tags: ["React", "TypeScript", "Supabase"],
     live: "",
-    github: "#",
+    github: "https://github.com/adityatomar4877-rgb/Ayurveda",
     tone: "pink",
     year: "2025",
     num: "04",
@@ -188,7 +188,7 @@ function ProjectPreview({ image, grad, text, num, live, github, toneColor }: {
             live ↗
           </a>
         )}
-        <a href={github}
+        <a href={github} target="_blank" rel="noreferrer"
           className="glass-btn text-xs px-3 py-1.5 rounded-full font-medium font-mono hover:text-primary transition-smooth">
           github
         </a>
