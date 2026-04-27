@@ -43,7 +43,17 @@ export function Navbar({ name }: { name: string }) {
       <header
         className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-20 transition-smooth ${scrolled ? "py-3" : "py-5"}`}
       >
-        <nav className={`flex items-center justify-between gap-4 rounded-2xl px-5 py-3 transition-smooth ${scrolled ? "glass-card" : ""}`}>
+        <nav
+          className="flex items-center justify-between gap-4 rounded-2xl px-5 py-3"
+          style={{
+            background: scrolled ? "oklch(1 0 0 / 0.035)" : "transparent",
+            backdropFilter: scrolled ? "blur(24px) saturate(180%)" : "none",
+            WebkitBackdropFilter: scrolled ? "blur(24px) saturate(180%)" : "none",
+            border: scrolled ? "1px solid oklch(1 0 0 / 0.07)" : "1px solid transparent",
+            boxShadow: scrolled ? "0 8px 32px oklch(0 0 0 / 0.45), inset 0 1px 0 oklch(1 0 0 / 0.06)" : "none",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
           {/* Logo monogram */}
           <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection("#home"); }} className="relative flex items-center gap-3 group">
             <div
